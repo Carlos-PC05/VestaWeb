@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-vesta}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vesta}
+      POSTGRES_DB: ${POSTGRES_DB:-vesta}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-vesta}:${POSTGRES_PASSWORD:-vesta}@db:5432/${POSTGRES_DB:-vesta}
+      PORT: 3001
+      QUOTES_API_KEY: ${QUOTES_API_KEY:-}
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
