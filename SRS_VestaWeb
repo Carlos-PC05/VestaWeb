@@ -1,0 +1,478 @@
+# Especificación de Requisitos de Software (SRS)
+
+## Vesta Web — Edición autohospedada de uso personal
+
+| Campo                   | Valor                                                       |
+| ----------------------- | ----------------------------------------------------------- |
+| **Producto**            | Vesta Web — _Track. Invest. Grow._ (edición personal)       |
+| **Tipo de documento**   | Especificación de Requisitos de Software (ágil)             |
+| **Versión**             | 1.0                                                         |
+| **Estado**              | Borrador en revisión                                        |
+| **Autor**               | Carlos Parra Camacho                                        |
+| **Fecha**               | Junio de 2026                                               |
+| **Marco de referencia** | ISO/IEC/IEEE 29148:2018 (adaptado a enfoque ágil)           |
+| **Plataforma objetivo** | Aplicación web (SPA) autohospedada, navegador de escritorio |
+
+> **Naturaleza del documento.** Este SRS es un _documento vivo_ y describe un proyecto **independiente y previo** a _Vesta mobile_. Vesta Web es una aplicación web de **uso estrictamente personal**, ejecutada en un contenedor local dentro de la red doméstica del autor. Su finalidad es doble: cubrir una necesidad personal real y **validar el dominio de producto** (movimientos, cartera, patrimonio) antes de abordar la versión móvil comercial. El núcleo funcional se expresa como épicas → historias de usuario → criterios de aceptación, con _backlog_ priorizado por MoSCoW.
+
+> **Relación con Vesta mobile.** La visión comercial completa —app móvil multiusuario, backend gestionado — se especifica en un documento aparte (_SRS de Vesta 2.0_) que permanece **intacto**. Vesta Web no lo sustituye: es el primer peldaño. Se diseña de modo que el **dominio** (modelo de datos, validaciones, cálculos de cartera) y el **sistema de diseño** sean reutilizables en aquella fase.
+
+---
+
+## 0. Control del documento
+
+### 0.1 Versionado
+
+El documento se versiona junto al código del proyecto web. Versionado semántico simplificado: la cifra mayor cambia con replanteamientos de alcance o arquitectura; la menor, con incorporaciones o reorganizaciones de requisitos.
+
+### 0.2 Registro de cambios
+
+| Versión | Fecha      | Autor        | Descripción                                                                        |
+| ------- | ---------- | ------------ | ---------------------------------------------------------------------------------- |
+| 1.0     | Junio 2026 | Carlos Parra | Creación del SRS de Vesta Web como proyecto independiente y previo a Vesta mobile. |
+
+### 0.3 Estados de un requisito
+
+**Propuesta**, **Aceptada**, **En desarrollo**, **Implementada**, **Verificada** o **Descartada**.
+
+---
+
+## 1. Introducción
+
+### 1.1 Propósito
+
+Especificar los requisitos funcionales y no funcionales de **Vesta Web**, una aplicación web autohospedada de finanzas personales e inversión para uso individual del autor. Sirve de referencia para el desarrollo y la priorización, como artefacto ágil modificable.
+
+### 1.2 Visión del producto
+
+Vesta Web permite al autor **entender y hacer crecer su patrimonio** desde el navegador, en una herramienta que corre en su propia máquina. Unifica el **registro y categorización de movimientos** (ingresos y gastos), el **seguimiento de la cartera de inversión** (activos cotizados con precio de mercado y activos no cotizados valorados manualmente) y la **visualización del patrimonio** mediante un panel claro.
+
+Vesta **observa y visualiza**; no ejecuta operaciones ni asesora sobre inversiones. Al tratarse de una herramienta personal y local, el foco está en la utilidad diaria y en la calidad del dominio, no en requisitos comerciales, de escala o regulatorios.
+
+### 1.3 Alcance
+
+**Dentro del alcance:**
+
+- Registro manual de movimientos de ingreso y gasto, con categorías predefinidas y personalizadas.
+- Cartera de inversión con activos cotizados (precio vía API de mercado) y no cotizados (valoración manual: inmuebles, vehículos, solares, etc.).
+- Panel de visualización del patrimonio total, evolución temporal y desglose por categorías y por clase de activo.
+- Configuración de preferencias personales (moneda principal EUR o USD, apariencia).
+- Objetivos y planes de ahorro e inversión definidos por el usuario _(fase posterior de este proyecto)_.
+- Exportación e importación de los datos para copias de seguridad personales.
+- Empaquetado y ejecución como **contenedor local** (Docker) accesible en la red doméstica.
+
+**Fuera del alcance (por ser una edición personal y web):**
+
+- Multiusuario, registro y autenticación de terceros (es de un solo usuario).
+- Backend gestionado en la nube, residencia de datos y cualquier obligación de protección de datos (uso doméstico; véase §7).
+- Biometría, notificaciones push del dispositivo y caché local cifrada (propias del entorno móvil).
+- Multidivisa con conversión automática (se mantiene moneda principal EUR/USD).
+- Sincronización bancaria automática / Open Banking.
+- Aplicaciones móviles nativas (objeto del proyecto _Vesta mobile_).
+- Ejecución, custodia o asesoramiento de operaciones financieras.
+
+### 1.4 Definiciones, acrónimos y abreviaturas
+
+| Término                   | Significado                                                                                                      |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Activo cotizado**       | Activo con precio de mercado obtenible vía API (acción, ETF, oro, criptomoneda).                                 |
+| **Activo no cotizado**    | Activo valorado manualmente por el usuario (inmueble, vehículo, solar, etc.).                                    |
+| **SPA**                   | _Single Page Application_. Aplicación web de una sola página.                                                    |
+| **Contenedor**            | Unidad de software empaquetada (Docker) que ejecuta la aplicación de forma aislada.                              |
+| **LAN / red doméstica**   | Red local del domicilio a la que se limita el acceso a la aplicación.                                            |
+| **Proxy de cotizaciones** | Componente del backend local que intermedia con la API externa para ocultar la clave y evitar problemas de CORS. |
+| **MoSCoW**                | Técnica de priorización: _Must / Should / Could / Won't_.                                                        |
+| **NFR**                   | _Non-Functional Requirement_, requisito no funcional.                                                            |
+| **Patrimonio**            | Suma del saldo disponible y el valor de la cartera de inversión.                                                 |
+
+### 1.5 Referencias
+
+- ISO/IEC/IEEE 29148:2018 — _Requirements engineering_.
+- ISO/IEC 25010 — _Modelo de calidad del producto software_ (base de los NFR, §4).
+- WCAG 2.1, nivel AA — buenas prácticas de accesibilidad (no obligatorio en uso personal).
+- SRS de Vesta 2.0 (proyecto _Vesta mobile_): documento hermano que recoge la visión comercial completa.
+- Sistema de diseño de Vesta (Figma, "Vesta Dark Mode").
+
+---
+
+## 2. Descripción general
+
+### 2.1 Contexto y arquitectura de despliegue
+
+Vesta Web es una aplicación web autohospedada compuesta por tres piezas que se ejecutan en **contenedores locales** orquestados con Docker Compose en el equipo del autor:
+
+- **Frontend (SPA)**: aplicación Vite + React que se sirve estáticamente y se ejecuta en el navegador.
+- **Backend / API local**: servicio ligero que expone la API de datos a la SPA y actúa como **proxy** de la API de cotizaciones (para proteger la clave de acceso y evitar restricciones de CORS).
+- **Base de datos**: instancia de **PostgreSQL local**, con los datos persistidos en un volumen del contenedor.
+
+El autor **arranca** la aplicación cuando la necesita. El acceso queda restringido a la **red doméstica**; no se expone a internet. No hay servicios en la nube, ni cuentas de terceros, ni datos fuera del equipo del autor (salvo las llamadas salientes a la API de cotizaciones).
+
+### 2.2 Perfil de usuario
+
+| Perfil                       | Descripción                                                                     | Objetivos principales                                                                               |
+| ---------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Usuario único** (el autor) | Persona técnica que gestiona sus finanzas personales y su cartera de inversión. | Registrar gastos e ingresos, entender su gasto, seguir el valor de sus inversiones y su patrimonio. |
+
+No existen otros roles: no hay registro de terceros ni administración multiusuario. La operación del contenedor (arranque, copias de seguridad, actualizaciones) la realiza el propio autor.
+
+### 2.3 Suposiciones y dependencias
+
+- El autor dispone de un equipo con Docker y de una red doméstica.
+- Existe conectividad a internet para obtener cotizaciones; el resto de funciones opera en local mientras el contenedor esté en marcha.
+- Se depende de un proveedor externo de cotizaciones de mercado (a seleccionar) y de sus términos de uso.
+- La persistencia depende del volumen de datos del contenedor de PostgreSQL; las copias de seguridad son responsabilidad del autor (EP-W06).
+
+### 2.4 Restricciones
+
+- **Tecnológicas**: frontend con **Vite + React** (alineado con el entorno profesional del autor); backend ligero; **PostgreSQL local**; empaquetado con **Docker / Docker Compose**. Validación con Zod; gestión de estado/datos con TanStack Query y, si procede, Zustand (reutilizables en Vesta mobile).
+- **De diseño**: se reutiliza el sistema de diseño _dark-mode-first_ de Vesta, adaptado a una disposición de escritorio/responsive.
+- **De producto**: Vesta no ejecuta operaciones ni asesora.
+- **De despliegue**: ejecución local bajo demanda; acceso limitado a la red doméstica; sin exposición a internet.
+- **De recursos**: desarrollo en solitario, ágil y ligero (sprints cortos, Kanban).
+
+### 2.5 Roadmap del proyecto web
+
+- **Fase 0.1 — MVP web personal.** Movimientos, categorías, cartera (cotizados vía API y no cotizados manuales), panel de patrimonio, preferencias básicas (moneda), empaquetado Docker local accesible en la red doméstica.
+- **Fase 0.2 — Mejora personal.** Objetivos y planes de ahorro/inversión, analítica de gasto más rica, exportación/importación para copias de seguridad, PIN de acceso opcional.
+- **Salida hacia _Vesta mobile_.** Una vez validado el dominio, el trabajo continúa en el proyecto móvil comercial (SRS 2.0), reutilizando dominio y diseño.
+
+---
+
+## 3. Requisitos funcionales
+
+Se expresan como **épicas** (`EP-Wnn`) con **historias de usuario** (`HU-Wnn.mm`) y sus **criterios de aceptación** en formato Gherkin.
+
+### 3.1 Catálogo de épicas
+
+| ID     | Épica                                    | Fase    |
+| ------ | ---------------------------------------- | ------- |
+| EP-W01 | Registro y gestión de movimientos        | 0.1     |
+| EP-W02 | Categorías                               | 0.1     |
+| EP-W03 | Cartera de inversión                     | 0.1     |
+| EP-W04 | Panel y visualización del patrimonio     | 0.1     |
+| EP-W05 | Preferencias y configuración             | 0.1     |
+| EP-W06 | Datos personales y copias de seguridad   | 0.1–0.2 |
+| EP-W07 | Objetivos y planes de ahorro e inversión | 0.2     |
+| EP-W08 | Acceso a la aplicación (PIN opcional)    | 0.2     |
+
+### 3.2 Detalle de épicas e historias de usuario
+
+#### EP-W01 — Registro y gestión de movimientos
+
+**HU-W01.01 — Añadir movimiento.**
+_Como_ usuario, _quiero_ registrar un ingreso o gasto con importe, descripción, fecha, hora y categoría, _para_ llevar el control de mis finanzas.
+
+- **Dado** que estoy en "Añadir movimiento", **cuando** indico tipo (ingreso/gasto), importe, categoría y fecha, **entonces** el movimiento se guarda y aparece en el listado y en los balances.
+- **Dado** que dejo el importe vacío o a cero, **cuando** intento guardar, **entonces** se impide y se indica el error.
+
+**HU-W01.02 — Editar y eliminar movimiento.**
+_Como_ usuario, _quiero_ modificar o borrar un movimiento, _para_ corregir errores.
+
+- **Dado** que edito un movimiento y guardo, **entonces** los cambios se reflejan en listados y balances.
+- **Dado** que elimino un movimiento y confirmo, **entonces** desaparece y se recalculan los balances.
+
+**HU-W01.03 — Listado y filtrado.**
+_Como_ usuario, _quiero_ ver mis movimientos agrupados y filtrados, _para_ analizar mi actividad.
+
+- **Dado** que abro "Movimientos", **entonces** veo balance total, ingresos y gastos del periodo, con los movimientos agrupados por mes.
+- **Dado** que aplico un filtro (todos / ingresos / gastos), **entonces** la lista se actualiza.
+
+**HU-W01.04 — Vista de calendario.**
+_Como_ usuario, _quiero_ ver mis movimientos en un calendario, _para_ identificar patrones por fecha.
+
+- **Dado** que selecciono un día en el calendario, **entonces** veo los movimientos de ese día y su desglose por categorías.
+
+**HU-W01.05 — Detalle de movimiento.**
+_Como_ usuario, _quiero_ consultar el detalle de un movimiento, _para_ ver toda su información.
+
+- **Dado** que selecciono un movimiento, **entonces** veo importe, tipo, categoría, fecha, hora y descripción.
+
+#### EP-W02 — Categorías
+
+**HU-W02.01 — Categorías predefinidas.**
+_Como_ usuario nuevo, _quiero_ disponer de categorías por defecto, _para_ empezar sin configurar nada.
+
+- **Dado** que uso la app por primera vez, **cuando** registro un movimiento, **entonces** dispongo de un conjunto de categorías por defecto (alimentación, vivienda, ocio, transporte, salud, educación, ingresos, etc.).
+
+**HU-W02.02 — Categorías personalizadas.**
+_Como_ usuario, _quiero_ crear, editar y eliminar categorías (nombre, icono, color), _para_ adaptar la app a mi gasto.
+
+- **Dado** que creo una categoría, **entonces** queda disponible al registrar movimientos.
+- **Dado** que elimino una categoría con movimientos asociados, **entonces** la app me ofrece reasignarlos o marcarlos como "sin categoría" (no se pierden movimientos).
+
+**HU-W02.03 — Desglose por categorías.**
+_Como_ usuario, _quiero_ ver mis gastos por categoría, _para_ entender en qué gasto más.
+
+- **Dado** que tengo movimientos categorizados, **cuando** abro el desglose, **entonces** veo porcentaje e importe por categoría del periodo.
+
+#### EP-W03 — Cartera de inversión
+
+**HU-W03.01 — Registrar activo cotizado.**
+_Como_ usuario inversor, _quiero_ añadir un activo cotizado (acción, ETF, oro, cripto) por su ticker, _para_ seguir su valor de mercado.
+
+- **Dado** que registro un activo con clase, ticker, participaciones, precio de compra, fecha y comisión, **entonces** aparece en la cartera con su valor de mercado actualizado vía API.
+- **Dado** que el ticker no existe en el proveedor, **entonces** se me avisa y puedo corregirlo o registrarlo como no cotizado.
+
+**HU-W03.02 — Registrar activo no cotizado.**
+_Como_ usuario, _quiero_ añadir un activo sin cotización (inmueble, vehículo, solar…) con un valor que yo indico, _para_ incluirlo en mi patrimonio.
+
+- **Dado** que registro un activo no cotizado con nombre, clase, valor y fecha, **entonces** se suma al patrimonio con el valor indicado.
+- **Dado** que actualizo su valoración, **entonces** el patrimonio se recalcula.
+
+**HU-W03.03 — Operaciones de un activo.**
+_Como_ usuario inversor, _quiero_ registrar compras y ventas (participaciones, precio, comisión, fecha), _para_ calcular precio medio, plusvalía latente y comisiones acumuladas.
+
+- **Dado** que añado una operación, **entonces** se recalculan participaciones totales, precio medio, valor de mercado y plusvalía latente.
+
+**HU-W03.04 — Detalle de activo.**
+_Como_ usuario, _quiero_ ver el detalle de un activo, _para_ analizar su evolución y operaciones.
+
+- **Dado** que abro un activo, **entonces** veo valor actual, rentabilidad (importe y %), número de posiciones, precio medio, valor de mercado, plusvalía latente, comisiones acumuladas e historial de operaciones, con selector temporal (1D, 1S, 1M, 1A, MAX).
+
+**HU-W03.05 — Resumen y distribución de cartera.**
+_Como_ usuario, _quiero_ ver el valor total de la cartera, su rentabilidad y su distribución por clase de activo, _para_ tener visión de conjunto.
+
+- **Dado** que tengo activos, **cuando** abro "Cartera", **entonces** veo valor total, rentabilidad (importe y %), selector temporal y reparto por clase (ETFs, acciones, oro, cripto, etc.).
+
+#### EP-W04 — Panel y visualización del patrimonio
+
+**HU-W04.01 — Patrimonio total.**
+_Como_ usuario, _quiero_ ver mi patrimonio total y su variación, _para_ conocer mi situación de un vistazo.
+
+- **Dado** que tengo movimientos y/o activos, **cuando** abro el panel, **entonces** veo el patrimonio total y su variación (importe y %).
+
+**HU-W04.02 — Evolución temporal.**
+_Como_ usuario, _quiero_ ver la evolución de mi patrimonio, _para_ valorar mi progreso.
+
+- **Dado** que selecciono un rango (1D, 1S, 1M, 6M, YTD, Todo), **entonces** el gráfico se ajusta al rango.
+
+**HU-W04.03 — Gastos por categoría y últimos movimientos.**
+_Como_ usuario, _quiero_ ver mis gastos del mes por categoría y mis últimos movimientos, _para_ actuar rápido.
+
+- **Dado** que estoy en el panel, **entonces** veo el gasto del mes por categoría y un acceso a los últimos movimientos.
+
+#### EP-W05 — Preferencias y configuración
+
+**HU-W05.01 — Moneda principal.**
+_Como_ usuario, _quiero_ elegir mi moneda principal (EUR o USD), _para_ ver mis importes en ella.
+
+- **Dado** que cambio la moneda principal, **entonces** los importes se muestran en esa moneda.
+
+**HU-W05.02 — Apariencia.**
+_Como_ usuario, _quiero_ que la app respete el tema oscuro de Vesta, _para_ una experiencia coherente y cómoda.
+
+- **Dado** que abro la app, **entonces** se presenta con el tema oscuro del sistema de diseño.
+
+#### EP-W06 — Datos personales y copias de seguridad
+
+**HU-W06.01 — Exportar datos.**
+_Como_ usuario, _quiero_ exportar mis datos a un fichero, _para_ tener copias de seguridad.
+
+- **Dado** que solicito la exportación, **entonces** obtengo mis datos en un formato estructurado y legible por máquina.
+
+**HU-W06.02 — Importar datos.**
+_Como_ usuario, _quiero_ importar un fichero exportado previamente, _para_ restaurar mis datos.
+
+- **Dado** que importo un fichero válido, **entonces** mis datos se restauran de forma consistente.
+
+**HU-W06.03 — Borrar mis datos.**
+_Como_ usuario, _quiero_ poder borrar mis datos, _para_ empezar de cero si lo necesito.
+
+- **Dado** que solicito el borrado y confirmo de forma inequívoca, **entonces** los datos se eliminan.
+
+#### EP-W07 — Objetivos y planes de ahorro e inversión _(Fase 0.2)_
+
+**HU-W07.01 — Crear objetivo.**
+_Como_ usuario, _quiero_ fijar un objetivo (ahorro o inversión) con importe y fecha, _para_ trabajar hacia una meta.
+
+- **Dado** que creo un objetivo con tipo, importe y fecha, **entonces** la app muestra mi progreso hacia él.
+
+**HU-W07.02 — Seguimiento de progreso.**
+_Como_ usuario, _quiero_ ver cuánto me falta para un objetivo, _para_ ajustar mi comportamiento.
+
+- **Dado** que tengo un objetivo activo, **cuando** mis datos cambian, **entonces** el progreso se actualiza.
+
+> Los objetivos son metas **definidas por el usuario**; la app muestra progreso y proyecciones aritméticas neutras, sin recomendaciones de inversión.
+
+#### EP-W08 — Acceso a la aplicación (PIN opcional) _(Fase 0.2)_
+
+**HU-W08.01 — PIN de acceso opcional.**
+_Como_ usuario, _quiero_ poder proteger la app con un PIN, _para_ evitar accesos casuales desde otros dispositivos de mi red doméstica.
+
+- **Dado** que activo el PIN, **cuando** abro la app, **entonces** se me solicita antes de mostrar datos.
+- **Dado** que no activo el PIN, **entonces** la app abre directamente (comportamiento por defecto en uso personal).
+
+### 3.3 Product backlog priorizado (MoSCoW)
+
+| Historia                            | Fase 0.1 (MVP) | Fase 0.2 |
+| ----------------------------------- | -------------- | -------- |
+| HU-W01.01 Añadir movimiento         | Must           |          |
+| HU-W01.02 Editar/eliminar           | Must           |          |
+| HU-W01.03 Listado y filtros         | Must           |          |
+| HU-W01.04 Calendario                | Should         |          |
+| HU-W01.05 Detalle de movimiento     | Must           |          |
+| HU-W02.01 Categorías por defecto    | Must           |          |
+| HU-W02.02 Categorías personalizadas | Should         |          |
+| HU-W02.03 Desglose por categorías   | Must           |          |
+| HU-W03.01 Activo cotizado           | Must           |          |
+| HU-W03.02 Activo no cotizado        | Must           |          |
+| HU-W03.03 Operaciones de activo     | Should         |          |
+| HU-W03.04 Detalle de activo         | Should         |          |
+| HU-W03.05 Resumen de cartera        | Must           |          |
+| HU-W04.01 Patrimonio total          | Must           |          |
+| HU-W04.02 Evolución temporal        | Should         |          |
+| HU-W04.03 Gastos por categoría      | Must           |          |
+| HU-W05.01 Moneda principal          | Must           |          |
+| HU-W05.02 Apariencia (tema oscuro)  | Must           |          |
+| HU-W06.01 Exportar datos            | Should         | Must     |
+| HU-W06.02 Importar datos            | Could          | Should   |
+| HU-W06.03 Borrar datos              | Should         |          |
+| HU-W07.01 Crear objetivo            | Won't (now)    | Must     |
+| HU-W07.02 Seguimiento de progreso   | Won't (now)    | Must     |
+| HU-W08.01 PIN de acceso opcional    | Won't (now)    | Could    |
+
+---
+
+## 4. Requisitos no funcionales (NFR)
+
+Según categorías de ISO/IEC 25010, adaptadas a una aplicación web autohospedada de uso personal.
+
+### 4.1 Rendimiento y eficiencia
+
+- **NFR-W01.** La SPA debe cargar y ser utilizable con rapidez en el navegador de escritorio (objetivo orientativo: interfaz interactiva en ≤ 2 s tras el arranque del contenedor).
+- **NFR-W02.** Las interacciones de UI (navegación, filtros, apertura de detalle) responden de forma inmediata a la percepción del usuario (objetivo ≤ 100 ms), apoyándose en los datos ya cargados.
+- **NFR-W03.** Las cotizaciones se obtienen de forma asíncrona a través del proxy local y se cachean; la UI nunca se bloquea esperando a la red.
+
+### 4.2 Seguridad (proporcional a un entorno personal y doméstico)
+
+- **NFR-W04.** El acceso se limita a la **red doméstica**; la aplicación **no se expone a internet**.
+- **NFR-W05.** La **clave de la API de cotizaciones** reside en la configuración del backend (variables de entorno), **nunca en el frontend** ni en el repositorio.
+- **NFR-W06.** La base de datos PostgreSQL no se publica fuera de la red de contenedores; solo el backend accede a ella.
+- **NFR-W07.** Como salvaguarda opcional frente a accesos casuales desde otros dispositivos de la red, puede activarse un **PIN de acceso** (HU-W08.01).
+- **NFR-W08.** No se trata biometría, ni se almacenan credenciales de terceros, ni datos de otras personas.
+
+> Nota: al ser un despliegue local monousuario en red doméstica, el modelo de amenazas es mínimo. No se aplican controles pensados para entornos multiusuario o expuestos (RLS, gestión de sesiones robusta, cifrado en reposo de la caché), que sí figuran en el SRS de _Vesta mobile_.
+
+### 4.3 Usabilidad y accesibilidad
+
+- **NFR-W09.** La interfaz respeta el sistema de diseño de Vesta (tema oscuro, paleta y tipografías) adaptado a una disposición de escritorio, y se comporta de forma **responsive** por si se accede desde otro dispositivo de la red doméstica.
+- **NFR-W10.** Se siguen buenas prácticas de accesibilidad (contraste suficiente, foco de teclado, semántica) inspiradas en WCAG 2.1 AA. No es una obligación legal en uso personal, pero mejora la calidad y facilita la reutilización en Vesta mobile.
+- **NFR-W11.** Los textos están en español; la arquitectura no impide una futura internacionalización.
+- **NFR-W12.** Los errores se comunican con mensajes claros y accionables.
+
+### 4.4 Fiabilidad
+
+- **NFR-W13.** Los datos persisten en un **volumen** del contenedor de PostgreSQL y sobreviven a reinicios del contenedor.
+- **NFR-W14.** El usuario puede realizar **copias de seguridad** mediante exportación (EP-W06); se documentará también la copia del volumen de datos.
+- **NFR-W15.** Ante fallo de la API de cotizaciones, la app degrada con elegancia: muestra los últimos valores conocidos con su marca temporal y no impide el resto de funciones.
+
+### 4.5 Mantenibilidad y portabilidad
+
+- **NFR-W16.** Arquitectura "lo más _vanilla_ posible": Vite + React en frontend, backend ligero, PostgreSQL, sin capas ni herramientas pesadas innecesarias.
+- **NFR-W17.** **Separación entre lógica de dominio y UI.** El dominio (modelo, validaciones con Zod, cálculos de cartera y patrimonio) se mantiene independiente de React, de modo que sea **reutilizable en Vesta mobile** con el mínimo reajuste.
+- **NFR-W18.** La integración con la API de cotizaciones se encapsula tras una interfaz (`QuotesService`) para permitir el cambio de proveedor.
+- **NFR-W19.** El proyecto se empaqueta con **Docker Compose** de forma que el arranque sea reproducible con un único comando.
+- **NFR-W20.** El SRS y el esquema de datos se versionan junto al código.
+
+---
+
+## 5. Requisitos de datos
+
+### 5.1 Modelo de dominio (entidades principales)
+
+> Al ser monousuario, no hay entidad de "usuario" con credenciales ni aislamiento por filas. Las preferencias se guardan en una única fila de configuración. El esquema, no obstante, se diseña de forma que **no impida** un futuro salto a multiusuario en Vesta mobile.
+
+- **Configuración (`settings`)**: fila única con las preferencias personales (moneda principal, apariencia, PIN opcional activado/desactivado).
+- **Categoría (`categories`)**: identificador, nombre, icono, color, tipo (ingreso/gasto), indicador de predefinida.
+- **Movimiento (`transactions`)**: identificador, importe, divisa, tipo (ingreso/gasto), descripción, fecha y hora, categoría, estado.
+- **Activo (`assets`)**: identificador, naturaleza (cotizado/no cotizado), clase (acción, ETF, oro, criptomoneda, inmueble, vehículo, solar, otro), nombre, ticker (si cotizado), divisa, valoración manual y fecha (si no cotizado).
+- **Operación de activo (`asset_transactions`)**: identificador, activo, tipo (compra/venta), participaciones, precio unitario, comisión, fecha. Permite derivar precio medio, participaciones totales, valor de mercado, plusvalía latente y comisiones acumuladas.
+- **Cotización (`quotes`)** _(caché)_: identificador de activo/ticker, precio, divisa, marca temporal. Reduce llamadas a la API y permite mostrar el último valor conocido cuando no hay conexión.
+- **Objetivo (`goals`)** _(Fase 0.2)_: identificador, tipo (ahorro/inversión), importe objetivo, fecha objetivo, importe actual derivado.
+
+### 5.2 Reglas y consideraciones de datos
+
+- **REQ-DAT-W01.** Los importes se almacenan con su divisa; la consolidación a la moneda principal es una operación de presentación (EUR/USD).
+- **REQ-DAT-W02.** Las cotizaciones cacheadas guardan marca temporal para señalar su antigüedad (NFR-W15).
+- **REQ-DAT-W03.** Eliminar una categoría con movimientos asociados nunca borra movimientos: se reasignan o se marcan como "sin categoría" (HU-W02.02).
+- **REQ-DAT-W04.** La exportación/importación cubre el conjunto de entidades del usuario de forma consistente (EP-W06).
+
+---
+
+## 6. Requisitos de interfaces externas
+
+### 6.1 Interfaz de usuario
+
+SPA en el navegador con las vistas equivalentes a las del sistema de diseño de Vesta, adaptadas a escritorio: panel/patrimonio, movimientos (lista y calendario), añadir/editar movimiento, detalle de movimiento, cartera, detalle de activo, registrar activo, categorías, preferencias y (Fase 0.2) objetivos. Respeta los tokens de diseño (NFR-W09).
+
+### 6.2 API interna (backend local ↔ SPA)
+
+- **IF-W01.** El backend expone una API local para operar sobre los datos (movimientos, categorías, activos, operaciones, objetivos, configuración).
+- **IF-W02.** El backend es el único componente que accede a PostgreSQL.
+
+### 6.3 API de cotizaciones de mercado (a través de proxy local)
+
+- **IF-W03.** El backend actúa como **proxy** de una API externa de cotizaciones para activos cotizados (acciones, ETFs, oro, criptomonedas). El proveedor está por seleccionar; criterios: cobertura de activos, límites de uso, latencia y **términos de uso** (§7).
+- **IF-W04.** La integración se encapsula tras `QuotesService` (NFR-W18) y las respuestas se cachean (entidad `quotes`).
+
+### 6.4 Base de datos
+
+- **IF-W05.** PostgreSQL en contenedor local, con los datos en un volumen persistente (NFR-W13).
+
+### 6.5 Empaquetado y ejecución
+
+- **IF-W06.** La solución se define mediante **Docker Compose** con los servicios de frontend, backend y base de datos.
+- **IF-W07.** El autor arranca la solución bajo demanda; el acceso queda restringido a la red doméstica (NFR-W04).
+
+> **Fuera de alcance de interfaces:** biometría del dispositivo, notificaciones push, servicios en la nube gestionados y agregadores de Open Banking. Todos ellos pertenecen al proyecto _Vesta mobile_.
+
+---
+
+## 7. Consideraciones legales y de privacidad
+
+- **REQ-CON-W01.** Vesta Web es una herramienta de **uso estrictamente personal y doméstico**, sin tratamiento de datos de terceros. En este contexto **no resultan de aplicación** las obligaciones de protección de datos (RGPD/LOPDGDD), de servicios de pago (PSD2), ni los requisitos de tiendas de aplicaciones, que sí se contemplan en el SRS de _Vesta mobile_.
+- **REQ-CON-W02.** Aunque no haya obligación legal, se aplican **buenas prácticas de higiene**: no exponer la aplicación a internet, mantener el acceso en la red doméstica y realizar copias de seguridad periódicas.
+- **REQ-CON-W03.** Deben respetarse los **términos de uso de la API de cotizaciones**, incluso en un uso personal (límites de llamadas y, en su caso, restricciones de uso de los datos).
+- **REQ-CON-W04.** Si en el futuro la aplicación dejara de ser de uso personal (por ejemplo, si se compartiera con terceros o se expusiera públicamente), **dejaría de estar amparada por el uso doméstico** y pasaría a requerir el marco descrito en el SRS de _Vesta mobile_.
+
+---
+
+## 8. Apéndices
+
+### 8.1 Glosario
+
+Véase §1.4.
+
+### 8.2 Matriz de trazabilidad (resumen)
+
+| Épica                 | Historias    | NFR relevantes    |
+| --------------------- | ------------ | ----------------- |
+| EP-W01 Movimientos    | HU-W01.01–05 | NFR-W01, W02, W13 |
+| EP-W02 Categorías     | HU-W02.01–03 | NFR-W09           |
+| EP-W03 Cartera        | HU-W03.01–05 | NFR-W03, W15, W18 |
+| EP-W04 Panel          | HU-W04.01–03 | NFR-W01, W02      |
+| EP-W05 Preferencias   | HU-W05.01–02 | NFR-W09           |
+| EP-W06 Datos y copias | HU-W06.01–03 | NFR-W13, W14      |
+| EP-W07 Objetivos      | HU-W07.01–02 | —                 |
+| EP-W08 PIN opcional   | HU-W08.01    | NFR-W04, W07      |
+
+### 8.3 Decisiones de arquitectura (ADR ligeros)
+
+- **ADR-W01.** Frontend con **Vite + React**. Motivo: es el stack del entorno profesional del autor; la migración posterior a la app móvil se aborda en el proyecto _Vesta mobile_.
+- **ADR-W02.** **PostgreSQL local en Docker** en lugar de backend gestionado. Motivo: uso personal local, control total, coste cero y simplicidad.
+- **ADR-W03.** **Sin autenticación de usuario** en el MVP (monousuario en red doméstica); PIN de acceso como salvaguarda opcional (Fase 0.2).
+- **ADR-W04.** **Separación dominio/UI** para maximizar la reutilización del dominio (modelo, validaciones, cálculos) en Vesta mobile.
+- **ADR-W05.** **Proxy de cotizaciones** en el backend local para proteger la clave de la API y evitar CORS.
+- **ADR-W06.** **Exclusión de biometría, push, caché cifrada, multidivisa completa y Open Banking** en esta edición, por ser incompatibles con el entorno o innecesarias en uso personal.
+- **ADR-W07.** **Empaquetado con Docker Compose** para un arranque reproducible con un único comando.
+
+### 8.4 Diseño
+
+Referencia: sistema de diseño de Vesta (Figma, "Vesta Dark Mode"), adaptado a una disposición de escritorio/responsive. Se reutilizan paleta, tipografías (Outfit y Plus Jakarta Sans) y tokens.
+
+### 8.5 Cuestiones abiertas
+
+- Selección del proveedor de la API de cotizaciones (cobertura, límites, términos de uso).
+- Formato concreto de exportación/importación (p. ej. JSON) y estrategia de copia del volumen de datos.
+- Alcance de la analítica de gasto en Fase 0.2.
+- Definir el comando/flujo exacto de arranque del contenedor y la política de puertos en la red doméstica.
