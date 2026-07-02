@@ -7,6 +7,9 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-vesta}
     volumes:
       - db_data:/var/lib/postgresql/data
+      # Scripts de creación de esquema: Postgres los ejecuta una única vez,
+      # en orden alfabético, solo si el volumen de datos está vacío.
+      - ./postgresdb:/docker-entrypoint-initdb.d:ro
 
   backend:
     build: ./backend
