@@ -1,33 +1,63 @@
-/* Tokens verificados contra WCAG AA (contraste calculado, no adivinado — ver DESIGN.md). */
+/* Fuentes self-hosted (sin Google Fonts en runtime: app local self-hosted). */
+@font-face {
+  font-family: 'Outfit';
+  src: url('/fonts/outfit.woff2') format('woff2');
+  font-weight: 300 800;
+  font-display: swap;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/plus-jakarta-sans.woff2') format('woff2');
+  font-weight: 300 800;
+  font-display: swap;
+  font-style: normal;
+}
+
+/*
+ * Tokens de diseño (ver DESIGN.md). Los tokens de color son SEMÁNTICOS y cambian
+ * con el tema: `:root` define el tema oscuro por defecto, `[data-theme="light"]`
+ * lo sobreescribe. Ambas paletas verificadas contra WCAG AA por cálculo.
+ */
 :root {
-  /* Color: estrategia "Contenida" — neutros con matiz + un único acento. */
-  --bg: oklch(0.16 0.014 155);
-  --surface: oklch(0.21 0.016 155);
-  --surface-raised: oklch(0.26 0.018 155);
-  --border: oklch(0.32 0.016 155);
-  --ink: oklch(0.94 0.006 155);
-  --muted: oklch(0.66 0.014 155);
+  /* --- Tema oscuro (por defecto) --- */
+  --bg: #020b0c;
+  --surface: #062325;
+  --surface-raised: #0d3d41;
+  --border: #164a4e;
+  --ink: #ffffff;
+  --body: #bacac1;
+  --muted: #a0b1b2;
 
-  --primary: oklch(0.72 0.15 155); /* verde esmeralda: acento único, ganancias, foco */
-  --primary-on: oklch(0.16 0.014 155); /* texto sobre el acento: el propio bg, no blanco (ver DESIGN.md) */
-  --negative: oklch(0.66 0.15 25); /* rojo desaturado: solo pérdidas/gasto */
-  --negative-on: oklch(0.16 0.014 155);
+  --primary: #00d09e;
+  --primary-bright: #44edb9;
+  --primary-on: #00332a; /* texto sobre relleno verde */
+  --negative: #ff4b4b;
+  --negative-on: #ffffff;
 
-  --focus-ring: oklch(0.72 0.15 155 / 0.55);
+  /* Ramp de categorías / clases de activo (segmentos de donut, no llevan texto encima) */
+  --cat-1: #44edb9;
+  --cat-2: #b2c5ff;
+  --cat-3: #b9d5ff;
+  --cat-4: #0d7c6a;
+  --cat-5: #6f8fd6;
+  --cat-6: #3a5a99;
 
-  /* Tipografía: sans para interfaz, mono para toda cifra financiera (DESIGN.md, "Regla del Número Monoespaciado"). */
-  --font-sans:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  --font-mono:
-    ui-monospace, 'Cascadia Mono', 'SFMono-Regular', Consolas, monospace;
+  --focus-ring: color-mix(in oklch, var(--primary) 55%, transparent);
+  --shadow-raised: 0 8px 24px rgb(0 0 0 / 0.35);
 
-  /* Escala fija en rem (registro "product": nada de clamp() fluido en UI de app). */
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.25rem;
-  --text-xl: 1.75rem;
-  --text-display: 2.75rem;
+  /* --- Tokens no cromáticos (iguales en ambos temas) --- */
+  --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --text-xs: 0.6875rem; /* 11 */
+  --text-sm: 0.75rem; /* 12 */
+  --text-base: 1rem; /* 16 */
+  --text-lg: 1.125rem; /* 18 */
+  --text-xl: 1.25rem; /* 20 */
+  --text-2xl: 1.5rem; /* 24 */
+  --text-3xl: 2rem; /* 32 */
+  --text-display: 3rem; /* 48 */
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -37,21 +67,56 @@
   --space-6: 2rem;
   --space-8: 3rem;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Escala z semántica */
+  --z-sticky: 100;
+  --z-dropdown: 200;
+  --z-modal: 300;
+  --z-toast: 400;
 
   color-scheme: dark;
   font-family: var(--font-sans);
   font-size: var(--text-base);
   line-height: 1.5;
-  color: var(--ink);
+  color: var(--body);
   background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Tema claro --- */
+[data-theme='light'] {
+  --bg: #f4fafa;
+  --surface: #ffffff;
+  --surface-raised: #e4f0f0;
+  --border: #cbe0e0;
+  --ink: #04211f;
+  --body: #123634;
+  --muted: #4c6664;
+
+  --primary: #00795c;
+  --primary-bright: #00795c;
+  --primary-on: #ffffff;
+  --negative: #c0362f;
+  --negative-on: #ffffff;
+
+  --cat-1: #00795c;
+  --cat-2: #3b5bc0;
+  --cat-3: #5b76c8;
+  --cat-4: #0d9c84;
+  --cat-5: #8a6bd0;
+  --cat-6: #c07c2f;
+
+  --shadow-raised: 0 8px 24px rgb(2 33 31 / 0.1);
+  color-scheme: light;
 }
 
 *,
@@ -71,10 +136,13 @@ body {
 
 h1,
 h2,
-h3 {
+h3,
+h4 {
   margin: 0;
+  font-family: var(--font-display);
   font-weight: 600;
   letter-spacing: -0.01em;
+  color: var(--ink);
 }
 
 p {
@@ -86,9 +154,13 @@ button {
   color: inherit;
 }
 
-/* Toda cifra financiera se compone en mono para que las columnas alineen. */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Toda cifra financiera se compone con numeración tabular para que las columnas alineen. */
 .num {
-  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 
