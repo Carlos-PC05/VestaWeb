@@ -157,6 +157,7 @@ export function priceHistory(assetId: string, days = HISTORY_DAYS): Point[] {
 /** Valor diario de la cartera = Σ (shares · cotización) alineado por día. */
 export function portfolioValueSeries(days = HISTORY_DAYS): Point[] {
   const series = assets.map((a) => ({ shares: a.shares, hist: priceHistory(a.id, days) }))
+  if (series.length === 0) return []
   const out: Point[] = []
   for (let i = 0; i < days; i++) {
     let v = 0
@@ -176,10 +177,11 @@ export function assetTransactions(assetId: string): AssetTx[] {
   const txs: AssetTx[] = []
   for (let i = 0; i < nBuys; i++) {
     const daysAgo = Math.floor(rand() * HISTORY_DAYS)
+    const isBuy = rand() < 0.85
     txs.push({
       id: `${assetId}-tx${i}`,
       date: new Date(t0 - daysAgo * DAY).toISOString(),
-      type: rand() < 0.85 ? 'compra' : 'venta',
+      type: i === 0 ? 'compra' : isBuy ? 'compra' : 'venta',
       shares: round2((asset.shares / nBuys) * (0.5 + rand())),
       price: round2(asset.avgCost * (0.85 + rand() * 0.4)),
       fee: round2(1 + rand() * 4),

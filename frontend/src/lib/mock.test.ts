@@ -45,3 +45,13 @@ test('assetTransactions devuelve al menos una compra', () => {
   const txs = assetTransactions('vwce')
   expect(txs.some((t) => t.type === 'compra')).toBe(true)
 })
+
+test('assetTransactions incluye una compra para todo activo', () => {
+  for (const a of assets) {
+    expect(assetTransactions(a.id).some((t) => t.type === 'compra')).toBe(true)
+  }
+})
+
+test('priceHistory de un id inexistente devuelve []', () => {
+  expect(priceHistory('nonexistent')).toEqual([])
+})
