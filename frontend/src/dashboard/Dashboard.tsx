@@ -21,7 +21,14 @@ import './dashboard.css'
 
 const catName = new Map(categories.map((c) => [c.id, c.name]))
 
+/**
+ * Pantalla de inicio (EP-W04): patrimonio total con gráfico de tendencia,
+ * métricas del periodo (ingresos/gastos/balance/capital invertido), donut de
+ * gastos por categoría y los últimos movimientos registrados.
+ */
 export function Dashboard() {
+  // Rango temporal seleccionado en el hero; controla la serie de patrimonio
+  // y las métricas de ingresos/gastos/balance del periodo.
   const [range, setRange] = useState<Range>('1A')
   const ms = filterMovements(range)
   const serie = patrimonioSeries(range)

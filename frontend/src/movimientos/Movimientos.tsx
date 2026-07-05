@@ -10,9 +10,15 @@ import './movimientos.css'
 const catName = new Map(categories.map((c) => [c.id, c.name]))
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 
+/**
+ * Pantalla de movimientos: navegador de mes, métricas del mes (ingresos,
+ * gastos, balance) y el listado de movimientos de ese mes.
+ */
 export function Movimientos() {
   const now = new Date()
+  // Mes mostrado actualmente; empieza en el mes en curso y se desplaza con `shift`.
   const [cursor, setCursor] = useState({ year: now.getFullYear(), month: now.getMonth() })
+  /** Mueve el cursor `delta` meses (negativo = atrás, positivo = adelante). */
   const shift = (delta: number) => {
     const d = new Date(cursor.year, cursor.month + delta, 1)
     setCursor({ year: d.getFullYear(), month: d.getMonth() })

@@ -1,3 +1,8 @@
+/**
+ * Iconos SVG propios (sin librería externa) usados en nav, topbar y toggles.
+ * Todos comparten trazo y viewBox vía `base()`; el nombre de cada icono ya
+ * describe su uso, así que no se documentan uno a uno.
+ */
 type IconProps = { size?: number }
 
 const base = (size: number) => ({
@@ -52,6 +57,7 @@ export const IconArrow = ({ size = 14 }: IconProps) => (
   </svg>
 )
 
+/** Chevron con `dir` para invertir su orientación (volteo horizontal por CSS). */
 export const IconChevron = ({ dir = 'right', size = 18 }: IconProps & { dir?: 'left' | 'right' }) => (
   <svg {...base(size)} style={{ transform: dir === 'left' ? 'scaleX(-1)' : undefined }}>
     <path d="M9 6l6 6-6 6" />

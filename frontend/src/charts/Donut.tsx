@@ -4,7 +4,13 @@ import { formatCurrency } from '../lib/format'
 
 type Props = { data: Segment[]; valueFmt?: (n: number) => string }
 
-/** Donut de desglose (gastos por categoría, distribución por clase). */
+/**
+ * Donut de desglose con leyenda (gastos por categoría, distribución por
+ * clase de activo), con porcentaje de cada segmento sobre el total.
+ *
+ * @param data - Segmentos a representar (label, valor, color).
+ * @param valueFmt - Formateador del valor en tooltip y leyenda. Por defecto `formatCurrency`.
+ */
 export function Donut({ data, valueFmt = formatCurrency }: Props) {
   const total = data.reduce((acc, s) => acc + s.value, 0)
   return (

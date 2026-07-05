@@ -15,6 +15,11 @@ function titleFor(pathname: string): string {
   return 'Dashboard'
 }
 
+/**
+ * App-shell de la SPA: sidebar de navegación + toggle de tema, topbar con
+ * título derivado de la ruta activa, y el `<Outlet />` donde se renderiza
+ * la pantalla correspondiente. Se monta una sola vez como layout raíz.
+ */
 export function AppLayout() {
   const { resolved, setPreference } = useTheme()
   const { pathname } = useLocation()

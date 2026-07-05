@@ -16,7 +16,13 @@ export const RANGE_DAYS: Record<Range, number> = {
 
 const DAY = 86_400_000
 
-/** Epoch ms del inicio de la ventana. 'Todo' → -Infinity (sin recorte). */
+/**
+ * Epoch ms del inicio de la ventana del rango, contando hacia atrás desde `now`.
+ *
+ * @param range - Rango temporal seleccionado.
+ * @param now - Instante de referencia (parametrizable para tests); por defecto, ahora.
+ * @returns Epoch ms de inicio; `-Infinity` para `'Todo'` (sin recorte).
+ */
 export function rangeStart(range: Range, now: Date = new Date()): number {
   const days = RANGE_DAYS[range]
   return days === Infinity ? -Infinity : now.getTime() - days * DAY

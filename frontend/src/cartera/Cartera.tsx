@@ -10,7 +10,14 @@ import { formatCurrency, formatNumber, formatPercent } from '../lib/format'
 import type { Range } from '../lib/range'
 import './cartera.css'
 
+/**
+ * Pantalla de cartera (EP-W03): capital invertido con gráfico de tendencia,
+ * distribución del valor por clase de activo, y la tabla de activos —
+ * pulsar una fila navega al detalle del activo. Usa datos mock
+ * (`../lib/mock`) hasta que exista backend de cotizaciones.
+ */
 export function Cartera() {
+  // Rango temporal del hero; controla la serie de capital invertido mostrada.
   const [range, setRange] = useState<Range>('1A')
   const navigate = useNavigate()
   const serie = capitalInvertidoSeries(range)

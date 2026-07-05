@@ -1,6 +1,13 @@
 import type { ReactNode } from 'react'
 
-/** Panel de sección: cabecera opcional (título + acción) y contenido. */
+/**
+ * Panel de sección: cabecera opcional (título + acción) y contenido.
+ *
+ * @param title - Título de la cabecera; si se omite y no hay `action`, no se renderiza cabecera.
+ * @param action - Elemento opcional a mostrar en la cabecera (p. ej. un selector de rango).
+ * @param children - Contenido del panel.
+ * @param className - Clases CSS adicionales a añadir a la clase base `card`.
+ */
 export function Card({
   title,
   action,

@@ -138,6 +138,10 @@ export const assets: Asset[] = [
 /**
  * Cotización histórica diaria de un activo: paseo aleatorio multiplicativo
  * sembrado por el id, escalado para terminar exactamente en `currentPrice`.
+ *
+ * @param assetId - Id del activo (ver `assets`); si no existe, devuelve `[]`.
+ * @param days - Número de días de histórico a generar, hacia atrás desde hoy.
+ * @returns Serie de puntos `{ t, v }` con la cotización diaria.
  */
 export function priceHistory(assetId: string, days = HISTORY_DAYS): Point[] {
   const asset = assets.find((a) => a.id === assetId)
@@ -154,7 +158,12 @@ export function priceHistory(assetId: string, days = HISTORY_DAYS): Point[] {
   return logs.map((s, i) => ({ t: t0 + i * DAY, v: asset.currentPrice * Math.exp(s - last) }))
 }
 
-/** Valor diario de la cartera = Σ (shares · cotización) alineado por día. */
+/**
+ * Valor diario de la cartera = Σ (shares · cotización) alineado por día.
+ *
+ * @param days - Número de días de histórico a generar, hacia atrás desde hoy.
+ * @returns Serie de puntos `{ t, v }` con el valor total de la cartera.
+ */
 export function portfolioValueSeries(days = HISTORY_DAYS): Point[] {
   const series = assets.map((a) => ({ shares: a.shares, hist: priceHistory(a.id, days) }))
   if (series.length === 0) return []
@@ -167,7 +176,13 @@ export function portfolioValueSeries(days = HISTORY_DAYS): Point[] {
   return out
 }
 
-/** Historial de transacciones registradas de un activo. */
+/**
+ * Historial de transacciones (compras/ventas) registradas de un activo,
+ * generado de forma determinista y ordenado de más a menos reciente.
+ *
+ * @param assetId - Id del activo (ver `assets`); si no existe, devuelve `[]`.
+ * @returns Transacciones simuladas del activo, más recientes primero.
+ */
 export function assetTransactions(assetId: string): AssetTx[] {
   const asset = assets.find((a) => a.id === assetId)
   if (!asset) return []

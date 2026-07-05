@@ -10,8 +10,18 @@ type Props = {
   valueFmt?: (n: number) => string
 }
 
-/** Gráfico de área/línea para series temporales, tematizado con tokens. */
+/**
+ * Gráfico de área/línea para series temporales (patrimonio, capital
+ * invertido, cotización), tematizado con tokens de color CSS.
+ *
+ * @param data - Puntos `{ t, v }` a representar, ordenados por tiempo.
+ * @param color - Token de color CSS para trazo y relleno. Por defecto `var(--primary)`.
+ * @param height - Alto en px del contenedor responsive. Por defecto 300.
+ * @param valueFmt - Formateador del eje Y y del tooltip. Por defecto `formatCurrency`.
+ */
 export function AreaTrend({ data, color = 'var(--primary)', height = 300, valueFmt = formatCurrency }: Props) {
+  // Id único por instancia: varios AreaTrend en la misma pantalla no deben
+  // compartir el mismo <linearGradient id>, o Recharts pintaría con el ajeno.
   const gradientId = 'areaFill-' + useId().replace(/:/g, '')
   return (
     <ResponsiveContainer width="100%" height={height}>

@@ -1,4 +1,11 @@
-/** Tarjeta de métrica: etiqueta, cifra grande (tabular) y subtexto opcional. */
+/**
+ * Tarjeta de métrica: etiqueta, cifra grande (tabular) y subtexto opcional.
+ *
+ * @param label - Etiqueta descriptiva de la métrica.
+ * @param value - Valor a destacar, ya formateado (usa la clase `.num`).
+ * @param tone - Color semántico del valor: neutro, positivo o negativo. Por defecto `'neutral'`.
+ * @param sub - Texto secundario opcional (p. ej. variación en el periodo).
+ */
 export function StatCard({
   label,
   value,

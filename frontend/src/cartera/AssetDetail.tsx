@@ -11,11 +11,20 @@ import { rangeStart, type Range } from '../lib/range'
 import { formatCurrency, formatFullDate, formatNumber, formatPercent } from '../lib/format'
 import './cartera.css'
 
+/**
+ * Detalle de un activo de cartera: cotización con gráfico de tendencia,
+ * métricas de posición (valor de mercado, participaciones, rentabilidad) e
+ * historial de transacciones. El activo se resuelve por `id` de ruta
+ * (`/cartera/:id`); si no existe, muestra un estado vacío con enlace de vuelta.
+ */
 export function AssetDetail() {
   const { id } = useParams()
+  // Rango temporal del hero; controla qué tramo del histórico de precio se muestra.
   const [range, setRange] = useState<Range>('1A')
   const asset = assets.find((a) => a.id === id)
 
+  // Ruta con un id de activo inexistente: se evita renderizar el resto de la
+  // pantalla, que asume que `asset` existe.
   if (!asset) {
     return (
       <Card>
