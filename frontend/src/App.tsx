@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { AppLayout } from './app/AppLayout'
+import { Dashboard } from './dashboard/Dashboard'
 import './app/app.css'
 
 const Placeholder = ({ name }: { name: string }) => <div className="card">{name} — en construcción</div>
@@ -9,7 +10,7 @@ const router = createBrowserRouter([
     path: '/',
     element: <AppLayout />,
     children: [
-      { index: true, element: <Placeholder name="Dashboard" /> },
+      { index: true, element: <Dashboard /> },
       { path: 'movimientos', element: <Placeholder name="Movimientos" /> },
       { path: 'cartera', element: <Placeholder name="Cartera" /> },
       { path: 'cartera/:id', element: <Placeholder name="Detalle" /> },
