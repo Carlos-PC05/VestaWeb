@@ -34,7 +34,7 @@ export function Donut({ data, valueFmt = formatCurrency }: Props) {
               color: 'var(--ink)',
               fontVariantNumeric: 'tabular-nums',
             }}
-            formatter={(v) => [valueFmt(Number(v)), '']}
+            formatter={(v, name) => [valueFmt(Number(v)), String(name)]}
           />
         </PieChart>
       </ResponsiveContainer>
