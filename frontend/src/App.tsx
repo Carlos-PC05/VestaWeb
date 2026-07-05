@@ -3,9 +3,8 @@ import { AppLayout } from './app/AppLayout'
 import { Dashboard } from './dashboard/Dashboard'
 import { Movimientos } from './movimientos/Movimientos'
 import { Cartera } from './cartera/Cartera'
+import { AssetDetail } from './cartera/AssetDetail'
 import './app/app.css'
-
-const Placeholder = ({ name }: { name: string }) => <div className="card">{name} — en construcción</div>
 
 const router = createBrowserRouter([
   {
@@ -15,7 +14,7 @@ const router = createBrowserRouter([
       { index: true, element: <Dashboard /> },
       { path: 'movimientos', element: <Movimientos /> },
       { path: 'cartera', element: <Cartera /> },
-      { path: 'cartera/:id', element: <Placeholder name="Detalle" /> },
+      { path: 'cartera/:id', element: <AssetDetail /> },
     ],
   },
 ])

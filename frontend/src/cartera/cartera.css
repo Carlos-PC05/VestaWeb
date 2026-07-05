@@ -79,3 +79,47 @@ button.asset-row:hover {
     display: none;
   }
 }
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  width: fit-content;
+}
+.back-link:hover {
+  color: var(--ink);
+}
+
+.tx-table {
+  display: grid;
+}
+.tx-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr 1fr;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+}
+.tx-row:not(.tx-head):hover {
+  background: var(--surface-raised);
+}
+.tx-head {
+  font-size: var(--text-sm);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 900px) {
+  .tx-row {
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  }
+  .tx-row > :nth-child(3),
+  .tx-row > :nth-child(5) {
+    display: none;
+  }
+}
