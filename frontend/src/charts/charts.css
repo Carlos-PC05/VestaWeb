@@ -1,0 +1,68 @@
+.range-selector {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+}
+.range-btn {
+  padding: var(--space-1) var(--space-3);
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s var(--ease-out-expo), background 0.15s var(--ease-out-expo);
+}
+.range-btn:hover {
+  color: var(--ink);
+}
+.range-btn.is-active {
+  background: var(--primary);
+  color: var(--primary-on);
+}
+
+.donut {
+  display: grid;
+  gap: var(--space-4);
+}
+.donut-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.donut-legend li {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+.donut-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+}
+.donut-label {
+  color: var(--body);
+}
+.donut-val {
+  color: var(--ink);
+  font-weight: 600;
+}
+.donut-pct {
+  color: var(--muted);
+  min-width: 3ch;
+  text-align: right;
+}
+
+/* Recharts: quitar el rectángulo de foco por defecto en el tooltip cursor */
+.recharts-tooltip-cursor {
+  fill: var(--surface-raised);
+  opacity: 0.4;
+}
