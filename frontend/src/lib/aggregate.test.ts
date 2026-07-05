@@ -1,5 +1,5 @@
 import { test, expect } from 'bun:test'
-import { assets } from './mock'
+import { assets, movements } from './mock'
 import {
   sumIngresos,
   sumGastos,
@@ -9,6 +9,9 @@ import {
   distribucionPorClase,
   gastosPorCategoria,
   filterMovements,
+  patrimonioSeries,
+  capitalInvertidoSeries,
+  filterPoints,
 } from './aggregate'
 
 const ms = [
@@ -54,4 +57,18 @@ test('filterMovements("1S") solo devuelve la última semana', () => {
   const within = filterMovements('1S')
   const cutoff = Date.now() - 8 * 86_400_000
   expect(within.every((m) => +new Date(m.date) >= cutoff)).toBe(true)
+})
+
+test('filterPoints/capitalInvertidoSeries recortan por rango', () => {
+  const todo = capitalInvertidoSeries('Todo')
+  expect(filterPoints(todo, 'Todo').length).toBe(todo.length)
+  expect(capitalInvertidoSeries('1M').length).toBeLessThanOrEqual(todo.length)
+  expect(capitalInvertidoSeries('1M').length).toBeGreaterThan(0)
+})
+
+test('patrimonioSeries último punto ≈ liquidez total + valor de cartera', () => {
+  const serie = patrimonioSeries('Todo')
+  const liquidez = movements.reduce((acc, m) => acc + m.amount, 0)
+  const cartera = totalCartera().marketValue
+  expect(Math.abs(serie[serie.length - 1].v - (liquidez + cartera))).toBeLessThan(1)
 })

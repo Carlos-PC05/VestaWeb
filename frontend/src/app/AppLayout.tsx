@@ -41,6 +41,7 @@ export function AppLayout() {
           ))}
         </nav>
         <button
+          type="button"
           className="theme-toggle"
           onClick={() => setPreference(isDark ? 'light' : 'dark')}
           aria-label={isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}

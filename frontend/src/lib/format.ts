@@ -1,3 +1,8 @@
+const numberFormatter = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 4 })
+
+/** Formatea una cantidad sin unidad (p. ej. participaciones), es-ES. */
+export const formatNumber = (n: number): string => numberFormatter.format(n)
+
 const currencyFormatter = new Intl.NumberFormat('es-ES', {
   style: 'currency',
   currency: 'EUR',

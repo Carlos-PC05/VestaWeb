@@ -8,7 +8,7 @@ import { IconChevron } from '../lib/icons'
 import { assets, assetTransactions, priceHistory } from '../lib/mock'
 import { assetMetrics } from '../lib/aggregate'
 import { rangeStart, type Range } from '../lib/range'
-import { formatCurrency, formatFullDate, formatPercent } from '../lib/format'
+import { formatCurrency, formatFullDate, formatNumber, formatPercent } from '../lib/format'
 import './cartera.css'
 
 export function AssetDetail() {
@@ -58,7 +58,7 @@ export function AssetDetail() {
       <div className="stat-row">
         <StatCard label="Cotización" value={formatCurrency(asset.currentPrice)} />
         <StatCard label="Valor de mercado" value={formatCurrency(metrics.marketValue)} />
-        <StatCard label="Posiciones" value={`${asset.shares}`} sub={`${asset.class}`} />
+        <StatCard label="Posiciones" value={formatNumber(asset.shares)} sub={`${asset.class}`} />
         <StatCard
           label="Rentabilidad"
           value={formatCurrency(metrics.pnl)}
@@ -83,7 +83,7 @@ export function AssetDetail() {
               <div key={t.id} className="tx-row">
                 <span>{formatFullDate(t.date)}</span>
                 <span className={t.type === 'compra' ? 'tone-positive' : 'tone-negative'}>{t.type}</span>
-                <span className="ta-r num">{t.shares}</span>
+                <span className="ta-r num">{formatNumber(t.shares)}</span>
                 <span className="ta-r num">{formatCurrency(t.price)}</span>
                 <span className="ta-r num">{formatCurrency(t.fee)}</span>
                 <span className="ta-r num">{formatCurrency(total)}</span>

@@ -7,6 +7,7 @@ export function RangeSelector({ value, onChange }: { value: Range; onChange: (r:
     <div className="range-selector" role="tablist" aria-label="Rango temporal">
       {RANGES.map((r) => (
         <button
+          type="button"
           key={r}
           role="tab"
           aria-selected={r === value}

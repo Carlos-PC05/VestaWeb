@@ -30,13 +30,13 @@ export function Movimientos() {
       <Card
         action={
           <div className="month-nav">
-            <button onClick={() => shift(-1)} aria-label="Mes anterior">
+            <button type="button" onClick={() => shift(-1)} aria-label="Mes anterior">
               <IconChevron dir="left" />
             </button>
             <span className="month-label">
               {MONTHS[cursor.month]} {cursor.year}
             </span>
-            <button onClick={() => shift(1)} aria-label="Mes siguiente">
+            <button type="button" onClick={() => shift(1)} aria-label="Mes siguiente">
               <IconChevron dir="right" />
             </button>
           </div>

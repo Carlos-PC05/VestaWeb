@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import type { Point } from '../lib/mock'
 import { formatCurrency, formatDayLabel } from '../lib/format'
@@ -11,11 +12,12 @@ type Props = {
 
 /** Gráfico de área/línea para series temporales, tematizado con tokens. */
 export function AreaTrend({ data, color = 'var(--primary)', height = 300, valueFmt = formatCurrency }: Props) {
+  const gradientId = 'areaFill-' + useId().replace(/:/g, '')
   return (
     <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
         <defs>
-          <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={color} stopOpacity={0.28} />
             <stop offset="100%" stopColor={color} stopOpacity={0} />
           </linearGradient>
@@ -56,7 +58,7 @@ export function AreaTrend({ data, color = 'var(--primary)', height = 300, valueF
           dataKey="v"
           stroke={color}
           strokeWidth={2}
-          fill="url(#areaFill)"
+          fill={`url(#${gradientId})`}
           dot={false}
           activeDot={{ r: 4, fill: color }}
           isAnimationActive={false}

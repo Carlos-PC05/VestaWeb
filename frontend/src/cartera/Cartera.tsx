@@ -6,7 +6,7 @@ import { Donut } from '../charts/Donut'
 import { Card } from '../app/Card'
 import { assets } from '../lib/mock'
 import { assetMetrics, capitalInvertidoSeries, distribucionPorClase, totalCartera } from '../lib/aggregate'
-import { formatCurrency, formatPercent } from '../lib/format'
+import { formatCurrency, formatNumber, formatPercent } from '../lib/format'
 import type { Range } from '../lib/range'
 import './cartera.css'
 
@@ -52,14 +52,14 @@ export function Cartera() {
               const m = assetMetrics(a)
               const tone = m.pnl >= 0 ? 'tone-positive' : 'tone-negative'
               return (
-                <button key={a.id} className="asset-row" onClick={() => navigate(`/cartera/${a.id}`)}>
+                <button type="button" key={a.id} className="asset-row" onClick={() => navigate(`/cartera/${a.id}`)}>
                   <span className="asset-name">
                     <span className="asset-title">{a.name}</span>
                     <span className="asset-sub">
                       {a.ticker} · {a.class}
                     </span>
                   </span>
-                  <span className="ta-r num">{a.shares}</span>
+                  <span className="ta-r num">{formatNumber(a.shares)}</span>
                   <span className="ta-r num">{formatCurrency(a.currentPrice)}</span>
                   <span className="ta-r num">{formatCurrency(m.marketValue)}</span>
                   <span className={`ta-r num ${tone}`}>{formatPercent(m.pnlPct)}</span>
