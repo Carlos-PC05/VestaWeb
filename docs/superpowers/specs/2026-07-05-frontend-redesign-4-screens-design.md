@@ -44,7 +44,7 @@ Router (`react-router-dom`) con app-shell y `<Outlet/>`:
 Wrappers finos sobre **Recharts**, tematizados con tokens (`stroke`/`fill` = `var(--…)`), sin gridlines pesadas, sin sombras, ejes atenuados, tooltip con tipografía tabular:
 - **`AreaTrend.tsx`** — área + línea para series temporales (patrimonio, capital invertido, cotización). Prop: serie `{x, y}[]`, color de acento, formateador de eje/tooltip.
 - **`Donut.tsx`** — `PieChart` con `innerRadius` para desgloses (gastos por categoría, distribución por clase de activo). Prop: segmentos `{label, value, color}[]`.
-- **`RangeSelector.tsx`** — botones `1M · 3M · 1A · Todo` (nuestro, no es un chart). El rango seleccionado dirige **a la vez** la ventana del gráfico y la agregación de las stats.
+- **`RangeSelector.tsx`** — botones `1D · 1S · 1M · 3M · 6M · 1A · 3A · Todo` (nuestro, no es un chart). El rango seleccionado dirige **a la vez** la ventana del gráfico y la agregación de las stats. El mock genera puntos a resolución diaria para que `1D`/`1S` tengan datos que mostrar.
 
 ### Datos mock — `src/lib/mock.ts`
 Determinista (semilla fija) para que las cifras sean estables entre recargas:
