@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Card } from '../app/Card'
+import { Button } from '../app/Button'
 import { StatCard } from '../app/StatCard'
-import { IconArrow, IconChevron } from '../lib/icons'
+import { IconArrow, IconChevron, IconPlus } from '../lib/icons'
 import { categories } from '../lib/mock'
 import { balanceNeto, monthMovements, sumGastos, sumIngresos } from '../lib/aggregate'
 import { formatCurrency, formatRelativeDateTime } from '../lib/format'
@@ -60,7 +61,15 @@ export function Movimientos() {
         </div>
       </Card>
 
-      <Card title={`${ms.length} movimientos`}>
+      <Card
+        title={`${ms.length} movimientos`}
+        action={
+          // TODO: navegar al formulario de alta
+          <Button variant="primary" icon={<IconPlus />}>
+            Añadir movimiento
+          </Button>
+        }
+      >
         {ms.length === 0 ? (
           <p className="empty">No hay movimientos este mes.</p>
         ) : (

@@ -77,3 +77,9 @@ export const IconSettings = ({ size = 18 }: IconProps) => (
     <path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
   </svg>
 )
+
+export const IconPlus = ({ size = 16 }: IconProps) => (
+  <svg {...base(size)}>
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+)
