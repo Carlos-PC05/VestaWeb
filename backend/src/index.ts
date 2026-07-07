@@ -2,6 +2,8 @@ import express from 'express'
 import { pool } from './db'
 import { categoriesRouter } from './routes/categories'
 import { transactionsRouter } from './routes/transactions'
+import { assetsRouter } from './routes/assets'
+import { assetTransactionsRouter } from './routes/assetTransactions'
 
 const app = express()
 const port = Number(process.env.PORT ?? 3001)
@@ -25,6 +27,8 @@ app.get('/api/health', async (_req, res) => {
 
 app.use('/api/categories', categoriesRouter)
 app.use('/api/transactions', transactionsRouter)
+app.use('/api/assets', assetsRouter)
+app.use('/api/asset-transactions', assetTransactionsRouter)
 
 app.listen(port, () => {
   console.log(`Backend listening on port ${port}`)
