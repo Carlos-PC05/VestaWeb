@@ -192,6 +192,7 @@ export function AppLayout() {
           onClick={closeMenu}
           aria-hidden="true"
         />
+        {/* TODO: focus trap real mientras menuOpen (hoy Tab puede escapar al fondo) */}
         <aside
           id="mobile-drawer"
           className={menuOpen ? 'drawer is-open' : 'drawer'}
