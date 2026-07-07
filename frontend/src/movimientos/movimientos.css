@@ -1,0 +1,82 @@
+.month-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.month-nav button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--body);
+  cursor: pointer;
+}
+.month-nav button:hover {
+  color: var(--ink);
+  border-color: var(--primary);
+}
+.month-label {
+  min-width: 10ch;
+  text-align: center;
+  font-weight: 600;
+  color: var(--ink);
+}
+.empty {
+  color: var(--muted);
+  padding: var(--space-4) 0;
+}
+
+/* Reutiliza .movement-list / .movement / .mv-* de dashboard.css importado globalmente.
+   Se redefinen aquí por si Movimientos se carga sin Dashboard. */
+.movement-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+.movement {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  transition: background 0.15s var(--ease-out-expo);
+}
+.movement:hover {
+  background: var(--surface-raised);
+}
+.mv-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  background: var(--surface-raised);
+}
+.mv-icon.up {
+  color: var(--primary);
+}
+.mv-icon.down {
+  color: var(--negative);
+  transform: rotate(180deg);
+}
+.mv-main {
+  display: grid;
+  min-width: 0;
+}
+.mv-desc {
+  color: var(--ink);
+  font-weight: 600;
+}
+.mv-meta {
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+.mv-amount {
+  font-weight: 600;
+}
