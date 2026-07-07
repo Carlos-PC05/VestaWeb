@@ -214,18 +214,104 @@
   gap: var(--space-4);
 }
 
+/* --- Menú móvil (top bar + drawer) ---
+   Oculto por defecto en escritorio; solo se muestra dentro del media query
+   `max-width: 720px` de más abajo. */
+.mobile-topbar,
+.burger,
+.drawer,
+.drawer-backdrop {
+  display: none;
+}
+
 @media (max-width: 720px) {
   .app-shell {
     grid-template-columns: 1fr;
   }
   .sidebar {
-    position: static;
-    height: auto;
-    flex-direction: row;
-    align-items: center;
-    flex-wrap: wrap;
+    display: none;
   }
+
+  .mobile-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4) var(--space-5);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+  }
+  .burger {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    color: var(--body);
+    cursor: pointer;
+  }
+  .burger:hover {
+    color: var(--ink);
+    border-color: var(--primary);
+  }
+
+  .drawer-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: color-mix(in srgb, var(--bg) 60%, transparent);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s var(--ease-out-expo);
+    z-index: var(--z-dropdown);
+  }
+  .drawer-backdrop.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .drawer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: min(82vw, 320px);
+    padding: var(--space-5) var(--space-4);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    transform: translateX(-100%);
+    transition: transform 0.3s var(--ease-out-expo);
+    z-index: var(--z-modal);
+  }
+  .drawer.is-open {
+    transform: translateX(0);
+  }
+  .drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
   .theme-toggle {
     margin-top: 0;
+  }
+
+  .content {
+    padding-top: var(--space-5);
+  }
+}
+
+@media (max-width: 720px) and (prefers-reduced-motion: reduce) {
+  .drawer,
+  .drawer-backdrop {
+    transition: none;
   }
 }

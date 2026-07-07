@@ -83,3 +83,15 @@ export const IconPlus = ({ size = 16 }: IconProps) => (
     <path d="M12 5v14M5 12h14" />
   </svg>
 )
+
+export const IconMenu = ({ size = 22 }: IconProps) => (
+  <svg {...base(size)}>
+    <path d="M4 6h16M4 12h16M4 18h16" />
+  </svg>
+)
+
+export const IconClose = ({ size = 22 }: IconProps) => (
+  <svg {...base(size)}>
+    <path d="M6 6l12 12M18 6L6 18" />
+  </svg>
+)
