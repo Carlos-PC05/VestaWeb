@@ -105,12 +105,20 @@
   display: flex;
   gap: var(--space-3);
 }
-.topbar-chip {
-  width: 32px;
-  height: 32px;
+.topbar-btn {
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-full);
   background: var(--surface-raised);
   border: 1px solid var(--border);
+  color: var(--body);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.topbar-btn:hover {
+  color: var(--ink);
+  border-color: var(--primary);
 }
 
 .content {

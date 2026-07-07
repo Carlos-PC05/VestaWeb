@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useTheme } from '../lib/useTheme'
-import { IconDashboard, IconMovements, IconMoon, IconSun, IconWallet } from '../lib/icons'
+import { IconDashboard, IconMovements, IconMoon, IconSettings, IconSun, IconUser, IconWallet } from '../lib/icons'
 
 const NAV = [
   { to: '/', label: 'Dashboard', Icon: IconDashboard, end: true },
@@ -59,10 +59,14 @@ export function AppLayout() {
       <div className="main">
         <header className="topbar">
           <h1 className="topbar-title">{titleFor(pathname)}</h1>
-          <div className="topbar-actions" aria-hidden="true">
-            {/* Perfil y ajustes: placeholders sin implementar por ahora. */}
-            <span className="topbar-chip" />
-            <span className="topbar-chip" />
+          <div className="topbar-actions">
+            {/* TODO: perfil/ajustes */}
+            <button type="button" className="topbar-btn" aria-label="Perfil">
+              <IconUser />
+            </button>
+            <button type="button" className="topbar-btn" aria-label="Ajustes">
+              <IconSettings />
+            </button>
           </div>
         </header>
         <main className="content">
