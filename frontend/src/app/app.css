@@ -231,6 +231,9 @@
   .sidebar {
     display: none;
   }
+  .topbar {
+    display: none;
+  }
 
   .mobile-topbar {
     display: flex;
