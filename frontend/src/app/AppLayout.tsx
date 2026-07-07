@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useTheme } from '../lib/useTheme'
 import {
@@ -106,10 +106,16 @@ function ProfileSettingsButtons() {
  * `NavList`/`ThemeToggle`/`ProfileSettingsButtons` para no duplicar UI.
  * El estado `menuOpen` controla la apertura del drawer; se cierra al pulsar
  * el backdrop, el botón de cierre, un enlace de navegación, o la tecla Escape.
+ * Mientras está abierto se bloquea el scroll del body, el drawer queda
+ * marcado como `inert`/`aria-hidden` cuando está cerrado (para que sus
+ * elementos no sean focables ni anunciados fuera de pantalla), y el foco se
+ * mueve al botón de cierre al abrir y de vuelta a la hamburguesa al cerrar.
  */
 export function AppLayout() {
   const { pathname } = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
+  const burgerRef = useRef<HTMLButtonElement>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
 
   // Cierra el drawer con la tecla Escape mientras está abierto.
   useEffect(() => {
@@ -129,6 +135,23 @@ export function AppLayout() {
     document.body.style.overflow = 'hidden'
     return () => {
       document.body.style.overflow = previousOverflow
+    }
+  }, [menuOpen])
+
+  // Gestión de foco del diálogo: al abrir, el foco pasa al botón de cierre
+  // dentro del drawer; al cerrar, vuelve a la hamburguesa que lo abrió. Se
+  // omite en el montaje inicial (menuOpen empieza en `false`) para no robar
+  // el foco de la página al cargarla.
+  const isFirstRender = useRef(true)
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    if (menuOpen) {
+      closeButtonRef.current?.focus()
+    } else {
+      burgerRef.current?.focus()
     }
   }, [menuOpen])
 
@@ -153,6 +176,7 @@ export function AppLayout() {
           </div>
           <button
             type="button"
+            ref={burgerRef}
             className="burger"
             aria-label="Abrir menú"
             aria-expanded={menuOpen}
@@ -174,13 +198,21 @@ export function AppLayout() {
           role="dialog"
           aria-modal="true"
           aria-label="Menú de navegación"
+          aria-hidden={!menuOpen}
+          inert={!menuOpen}
         >
           <div className="drawer-head">
             <div className="brand">
               <span className="brand-mark">V</span>
               <span className="brand-name">Vesta</span>
             </div>
-            <button type="button" className="burger" aria-label="Cerrar menú" onClick={closeMenu}>
+            <button
+              type="button"
+              ref={closeButtonRef}
+              className="burger"
+              aria-label="Cerrar menú"
+              onClick={closeMenu}
+            >
               <IconClose />
             </button>
           </div>
