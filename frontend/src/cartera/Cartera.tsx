@@ -4,6 +4,8 @@ import { RangeSelector } from '../charts/RangeSelector'
 import { AreaTrend } from '../charts/AreaTrend'
 import { Donut } from '../charts/Donut'
 import { Card } from '../app/Card'
+import { Button } from '../app/Button'
+import { IconPlus } from '../lib/icons'
 import { assets } from '../lib/mock'
 import { assetMetrics, capitalInvertidoSeries, distribucionPorClase, totalCartera } from '../lib/aggregate'
 import { formatCurrency, formatNumber, formatPercent } from '../lib/format'
@@ -46,7 +48,15 @@ export function Cartera() {
           <Donut data={dist} />
         </Card>
 
-        <Card title="Activos">
+        <Card
+          title="Activos"
+          action={
+            // TODO: navegar al formulario de alta
+            <Button variant="primary" icon={<IconPlus />}>
+              Añadir activo
+            </Button>
+          }
+        >
           <div className="asset-table">
             <div className="asset-row asset-head">
               <span>Activo</span>

@@ -63,3 +63,35 @@ export const IconChevron = ({ dir = 'right', size = 18 }: IconProps & { dir?: 'l
     <path d="M9 6l6 6-6 6" />
   </svg>
 )
+
+export const IconUser = ({ size = 18 }: IconProps) => (
+  <svg {...base(size)}>
+    <circle cx="12" cy="8" r="3.5" />
+    <path d="M5 20a7 7 0 0 1 14 0" />
+  </svg>
+)
+
+export const IconSettings = ({ size = 18 }: IconProps) => (
+  <svg {...base(size)}>
+    <circle cx="12" cy="12" r="3" />
+    <path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
+  </svg>
+)
+
+export const IconPlus = ({ size = 16 }: IconProps) => (
+  <svg {...base(size)}>
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+)
+
+export const IconMenu = ({ size = 22 }: IconProps) => (
+  <svg {...base(size)}>
+    <path d="M4 6h16M4 12h16M4 18h16" />
+  </svg>
+)
+
+export const IconClose = ({ size = 22 }: IconProps) => (
+  <svg {...base(size)}>
+    <path d="M6 6l12 12M18 6L6 18" />
+  </svg>
+)
