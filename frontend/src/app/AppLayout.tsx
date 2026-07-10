@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { NavLink, Outlet, useLocation, useNavigation } from 'react-router-dom'
 import { useTheme } from '../lib/useTheme'
 import {
   IconClose,
@@ -113,15 +113,38 @@ function ProfileSettingsButtons() {
  */
 export function AppLayout() {
   const { pathname } = useLocation()
+  const navigation = useNavigation()
   const [menuOpen, setMenuOpen] = useState(false)
   const burgerRef = useRef<HTMLButtonElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const drawerRef = useRef<HTMLElement>(null)
 
-  // Cierra el drawer con la tecla Escape mientras está abierto.
+  // Mientras el drawer está abierto: Escape lo cierra y Tab queda atrapado
+  // dentro (focus trap manual: el drawer no es un <dialog> nativo porque su
+  // animación de deslizamiento necesita el elemento siempre montado).
   useEffect(() => {
     if (!menuOpen) return
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMenuOpen(false)
+      if (event.key === 'Escape') {
+        setMenuOpen(false)
+        return
+      }
+      if (event.key !== 'Tab' || !drawerRef.current) return
+      const focusables = drawerRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled])',
+      )
+      if (focusables.length === 0) return
+      const first = focusables[0]
+      const last = focusables[focusables.length - 1]
+      const active = document.activeElement
+      const outside = !drawerRef.current.contains(active)
+      if (event.shiftKey && (active === first || outside)) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && (active === last || outside)) {
+        event.preventDefault()
+        first.focus()
+      }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
@@ -159,6 +182,8 @@ export function AppLayout() {
 
   return (
     <div className="app-shell">
+      {/* Barra de progreso fina durante las cargas de ruta (loaders en vuelo). */}
+      {navigation.state === 'loading' && <div className="nav-progress" aria-hidden="true" />}
       <aside className="sidebar">
         <div className="brand">
           <span className="brand-mark">V</span>
@@ -192,8 +217,8 @@ export function AppLayout() {
           onClick={closeMenu}
           aria-hidden="true"
         />
-        {/* TODO: focus trap real mientras menuOpen (hoy Tab puede escapar al fondo) */}
         <aside
+          ref={drawerRef}
           id="mobile-drawer"
           className={menuOpen ? 'drawer is-open' : 'drawer'}
           role="dialog"

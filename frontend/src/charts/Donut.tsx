@@ -13,6 +13,13 @@ type Props = { data: Segment[]; valueFmt?: (n: number) => string }
  */
 export function Donut({ data, valueFmt = formatCurrency }: Props) {
   const total = data.reduce((acc, s) => acc + s.value, 0)
+  if (data.length === 0) {
+    return (
+      <div className="chart-empty" style={{ height: 220 }}>
+        <p>Sin datos que desglosar todavía.</p>
+      </div>
+    )
+  }
   return (
     <div className="donut">
       <ResponsiveContainer width="100%" height={220}>

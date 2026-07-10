@@ -1,6 +1,6 @@
 import { useId } from 'react'
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import type { Point } from '../lib/mock'
+import type { Point } from '../lib/api'
 import { formatCurrency, formatDayLabel } from '../lib/format'
 
 type Props = {
@@ -23,6 +23,13 @@ export function AreaTrend({ data, color = 'var(--primary)', height = 300, valueF
   // Id único por instancia: varios AreaTrend en la misma pantalla no deben
   // compartir el mismo <linearGradient id>, o Recharts pintaría con el ajeno.
   const gradientId = 'areaFill-' + useId().replace(/:/g, '')
+  if (data.length === 0) {
+    return (
+      <div className="chart-empty" style={{ height }}>
+        <p>Sin datos todavía. Registra movimientos u operaciones para ver la evolución.</p>
+      </div>
+    )
+  }
   return (
     <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
